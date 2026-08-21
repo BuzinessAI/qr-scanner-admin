@@ -1,0 +1,7 @@
+services:
+  qradmin:
+    image: 555751474939.dkr.ecr.ap-south-1.amazonaws.com/qrscanner/qradmin:${VERSION}
+    container_name: qradmin
+    restart: always
+    ports:
+      - "3000:3000"
