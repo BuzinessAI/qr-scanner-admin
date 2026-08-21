@@ -41,7 +41,7 @@ jobs:
 
       - name: Deploy Web
         run: |
-          scp -o StrictHostKeyChecking=no .env.deploy docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/lib/projects/bruhat-web/
+          scp -o StrictHostKeyChecking=no .env.deploy docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/lib/projects/qradmin/
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
             set -e
             cd /var/lib/projects/qradmin
