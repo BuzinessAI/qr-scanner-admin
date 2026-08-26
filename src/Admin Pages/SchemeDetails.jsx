@@ -11,6 +11,14 @@ import {
   FaListUl,
 } from "react-icons/fa";
 
+// startDate and endDate are optional on the Scheme model, so a missing value is
+// normal and must not render as "Invalid Date".
+const formatDate = (value) => {
+  if (!value) return "-";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "-" : date.toLocaleDateString();
+};
+
 const SchemeDetails = () => {
   const { id } = useParams();
   const [scheme, setScheme] = useState(null);
@@ -89,11 +97,15 @@ const SchemeDetails = () => {
               <FaListUl className="me-2 text-danger" />
               Required Documents
             </h6>
-            <ul>
-              {scheme.requiredDocuments?.map((doc, i) => (
-                <li key={i}>{doc}</li>
-              ))}
-            </ul>
+            {scheme.requiredDocuments?.length ? (
+              <ul>
+                {scheme.requiredDocuments.map((doc, i) => (
+                  <li key={i}>{doc}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-muted mb-0">None</p>
+            )}
           </div>
 
           {/* DATES */}
@@ -104,15 +116,11 @@ const SchemeDetails = () => {
             </h6>
 
             <p>
-              <strong>Start:</strong>{" "}
-              {new Date(scheme.startDate).toLocaleDateString()}
+              <strong>Start:</strong> {formatDate(scheme.startDate)}
             </p>
 
             <p>
-              <strong>End:</strong>{" "}
-              {scheme.endDate
-                ? new Date(scheme.endDate).toLocaleDateString()
-                : "-"}
+              <strong>End:</strong> {formatDate(scheme.endDate)}
             </p>
           </div>
 

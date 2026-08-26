@@ -66,10 +66,16 @@ const Login = (props) => {
     e.preventDefault();
 
     try {
-      const res = await Instance.post("/auth/admin/login", {
-        email: validation.values.email,
-        password: validation.values.password,
-      });
+      const res = await Instance.post(
+        "/auth/admin/login",
+        {
+          email: validation.values.email,
+          password: validation.values.password,
+        },
+        // A wrong password answers 401 too. Without this the response
+        // interceptor would treat the failed sign-in as a dead session.
+        { skipAuthRedirect: true }
+      );
 
       if (res.data && res.data.token) {
         localStorage.setItem("authUser", JSON.stringify(res.data));
@@ -124,8 +130,20 @@ catch (error) {
     };
   });
 
+  // Set by the response interceptor when it tore down a dead session, so the
+  // user is told why they landed back here instead of silently losing a page.
+  const params = new URLSearchParams(window.location.search);
+  const sessionExpired = params.get("sessionExpired") === "1";
+  const nextPath = params.get("next");
+
   if (redirect) {
-    return <Navigate to="/dashboard" replace />;
+    // Only honour an in-app path, never an absolute URL an attacker could put
+    // in the query string to bounce someone off-site after login.
+    const safeNext =
+      nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")
+        ? nextPath
+        : "/dashboard";
+    return <Navigate to={safeNext} replace />;
   }
 
   return (
@@ -161,6 +179,11 @@ catch (error) {
                     <p className="mb-5 text-center">
                       Sign in to continue to Home QR.
                     </p>
+                    {sessionExpired && (
+                      <Alert color="warning">
+                        Your session is no longer valid. Please sign in again.
+                      </Alert>
+                    )}
                     <Form className="form-horizontal" onSubmit={handleLogin}>
                       {/* {error ? (
                         <Alert color="danger">
