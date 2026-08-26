@@ -1,9 +1,9 @@
 // src/Instance.js
 import axios from 'axios';
 
-const BaseUrl = 'http://localhost:8080/api';
+// const BaseUrl = 'http://localhost:8080/api';
 
-// const BaseUrl = 'https://api.myhomeqr.com/api';
+const BaseUrl = 'https://api.myhomeqr.com/api';
 
 // Create an instance of axios with default configurations
 const Instance = axios.create({
