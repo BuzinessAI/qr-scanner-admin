@@ -39,6 +39,11 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: Fix remote file ownership
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "sudo chown ${{ secrets.SSH_USER }}:${{ secrets.SSH_USER }} /var/lib/projects/qradmin/docker-compose.yml /var/lib/projects/qradmin/.env.deploy 2>/dev/null || true"
+
       - name: Deploy Web
         run: |
           scp -o StrictHostKeyChecking=no .env.deploy docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/lib/projects/qradmin/
